@@ -1,4 +1,6 @@
 /*******
-test mulitiline comment
+* test mulitiline comment
+    /* test nested comment /* test another nest /***another**/ ***/  */
+    /*** only 3 + 4 should result in tokens */
 */
 3 + 4

@@ -121,10 +121,23 @@ class Scanner {
         return isAlpha(c) || isDigit(c);
     }
 
-    // Handle multi-line C-style comments
+    // Handle nested, multi-line C-style comments
     private void cComment() {
-        while(peek() != '*' || peekNext() != '/' && !isAtEnd()) {
-            if(peek() == '\n') line++;
+        /* Currently not consuming the last ending comment characters in nested comments */
+        // Each new level of nesting adds another pair of uncomsumed characters
+        int commentDepth = 1; 
+        while ((peek() != '*' || peekNext() != '/' || commentDepth > 1) && !isAtEnd()) {
+            if (peek() == '\n') line++;
+            // If new comment starts, increment commentDepth, consume comment the '/'; the while block advance() will consume the '*'
+            if (peek() == '/' && peekNext() == '*'){
+                 commentDepth++;
+                 advance();
+            }
+            // Decrement commentDepth if we end a comment, and consume comment one character; the while block advance() will consume the next
+            if (peek() == '*' && peekNext() == '/') {
+                commentDepth--;
+                advance();
+            }
             advance();
         }
 
