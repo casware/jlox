@@ -1,6 +1,6 @@
 JAVAC=javac
-SRC_DIR=lib/com/craftinginterpeters/lox
-OUTPUT_DIR=classes
+SRC_DIR=src/com/craftinginterpeters/lox
+OUTPUT_DIR=bin
 FIND := /usr/bin/find
 MKDIR := /bin/mkdir
 JVM=java
