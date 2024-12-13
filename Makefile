@@ -29,4 +29,4 @@ clean:
 # Run
 .PHONY: run
 run:
-	$(JVM) $(JVMFLAGS) Scanner
+	$(JVM) $(JVMFLAGS) com.craftinginterpeters.lox.Lox
