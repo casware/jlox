@@ -77,8 +77,10 @@ class Scanner {
                 break;
             case '/':
                 if(match('/')) {
-                    // comments goe to end of line
+                    // comments go to end of line
                     while (peek() != '\n' && !isAtEnd()) advance();
+                } else if (match('*')) {
+                    cComment();
                 } else {
                     addToken(SLASH);
                 }
@@ -119,6 +121,23 @@ class Scanner {
         return isAlpha(c) || isDigit(c);
     }
 
+    // Handle multi-line C-style comments
+    private void cComment() {
+        while(peek() != '*' || peekNext() != '/' && !isAtEnd()) {
+            if(peek() == '\n') line++;
+            advance();
+        }
+
+        if (isAtEnd()) {
+            Lox.error(line, "Unterminated C-style comment");
+            return;
+        }
+
+        // Consume terminating '*' and '/'; do not add a token
+        advance();
+        advance();
+    }
+
     private void identifier() {
         while (isAlphaNumeric(peek())) advance();
 
@@ -144,7 +163,7 @@ class Scanner {
 
     private void string() {
         while (peek() != '"' && !isAtEnd()) {
-            if (peek() == 'n') line++;
+            if (peek() == '\n') line++;
             advance();
         }
 
