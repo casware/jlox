@@ -1,5 +1,5 @@
 JAVAC				:=	javac
-SRC_DIR				:=	src/com/craftinginterpeters/lox
+SRC_DIR				:=	src/com/craftinginterpreters/lox
 OUTPUT_DIR			:=	bin
 FIND 				:= 	/usr/bin/find
 MKDIR 				:= 	/bin/mkdir
@@ -29,9 +29,9 @@ clean:
 # Run
 .PHONY: run
 run:
-	$(JVM) $(JVMFLAGS) com.craftinginterpeters.lox.Lox
+	$(JVM) $(JVMFLAGS) com.craftinginterpreters.lox.Lox
 
 # Test scanner
 .PHONY: test_scanner
 test_scanner:
-	$(JVM) $(JVMFLAGS) com.craftinginterpeters.lox.Lox $(SCANNER_TEST_FILE)
+	$(JVM) $(JVMFLAGS) com.craftinginterpreters.lox.Lox $(SCANNER_TEST_FILE)
