@@ -21,7 +21,7 @@ public class Parser {
     }
 
     private Expr expression() {
-        return right_comma();
+        return rightComma();
     }
 
     private Expr comma() {
@@ -35,14 +35,14 @@ public class Parser {
         return expr;
     }
 
-    private Expr right_comma() {
+    private Expr rightComma() {
         Expr left = equality();
         if (!match(COMMA)) {
             return left;
         }
 
         Token operator = previous();
-        Expr expr = new Expr.Binary(left, operator, right_comma());
+        Expr expr = new Expr.Binary(left, operator, rightComma());
         return expr;
     }
 
