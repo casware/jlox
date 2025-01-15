@@ -123,6 +123,16 @@ public class Parser {
             Token operator = previous();
             Expr right = unary();
             return new Expr.Unary(operator, right);
+        } else if (match(PLUS, STAR, SLASH)) {
+            // Error production for unsupported unary operators
+            Token operator = previous();
+            // print error
+            error(previous(), "Unary operator '" + operator.lexeme + "' not allowed.");
+            // Consume right hand operand
+            primary();
+            // Go back to the top of the parse tree and begin again after discarding
+            // righthand token
+            return comma();
         }
 
         return primary();
