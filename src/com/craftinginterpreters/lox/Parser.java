@@ -21,7 +21,7 @@ public class Parser {
     }
 
     private Expr expression() {
-        return rightCommaNoRecursion();
+        return comma();
     }
 
     private Expr comma() {
