@@ -54,8 +54,8 @@ abstract class Expr {
     }
 
     static class Unary extends Expr {
-        Unary(Token token, Expr right) {
-            this.token = token;
+        Unary(Token operator, Expr right) {
+            this.operator = operator;
             this.right = right;
         }
 
@@ -64,7 +64,7 @@ abstract class Expr {
             return visitor.visitUnaryExpr(this);
         }
 
-        final Token token;
+        final Token operator;
         final Expr right;
     }
 
