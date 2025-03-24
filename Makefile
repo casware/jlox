@@ -35,3 +35,7 @@ run:
 .PHONY: test_scanner
 test_scanner:
 	$(JVM) $(JVMFLAGS) com.craftinginterpreters.lox.Lox $(SCANNER_TEST_FILE)
+
+.PHONY: generate_ast
+generate_ast:
+	$(JVM) $(JVMFLAGS) src/com/craftinginterpreters/tool/GenerateAst.java .
