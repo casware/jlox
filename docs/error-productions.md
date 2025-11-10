@@ -22,3 +22,7 @@ If we do it after w/o changing the current implementation in any way, we will fa
 So we either need to add it before, or add a condition to primary to consume the erroring tokens and then continue parsing.
 Can we report errors without aborting parsing?
 Yes, we can just use the error function but not throw the exception it returns.
+Add to the unary rule and use primary() to consume the next token.
+Then call comma() to return to the top of the parse tree.
+However, this won't actually result in an AST being created, since factor() is expecting a unary to be returned.
+This is ok, since we are in an error state.
