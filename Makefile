@@ -4,7 +4,6 @@ OUTPUT_DIR			:=	bin
 FIND 				:= 	/usr/bin/find
 MKDIR 				:= 	/bin/mkdir
 JVM					:=	java
-make-directories 	:= 	$(shell $(MKDIR) $(OUTPUT_DIR))
 all_javas 			:= 	$(OUTPUT_DIR)/all.javas
 class_path 			:= 	$(OUTPUT_DIR)
 SCANNER_TEST_FILE 	:= 	test_scanner.txt
