@@ -19,6 +19,7 @@ compile: $(all_javas)
 # all_javas - gather source file list
 .INTERMEDIATE: $(all_javas)
 $(all_javas):
+	$(MKDIR) -p $(OUTPUT_DIR)
 	$(FIND) $(SRC_DIR) -name '*.java' > $@
 
 .PHONY: clean
