@@ -31,6 +31,11 @@ clean:
 run:
 	$(JVM) $(JVMFLAGS) com.craftinginterpreters.lox.Lox
 
+# Run
+.PHONY: run_file
+run_file:
+	$(JVM) $(JVMFLAGS) com.craftinginterpreters.lox.Lox test_scanner.txt
+
 # Test scanner
 .PHONY: test_scanner
 test_scanner:

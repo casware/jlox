@@ -4,3 +4,4 @@
     /*** only 3 + 4 should result in tokens */
 */
 3 + 4;
+1+2
