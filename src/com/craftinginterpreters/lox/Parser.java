@@ -5,10 +5,12 @@ import java.util.List;
 import static com.craftinginterpreters.lox.TokenType.*;
 
 public class Parser {
-    private static class ParseError extends RuntimeException {}
+    private static class ParseError extends RuntimeException {
+        public ParseError(String message) { super(message); }
+    }
     private final List<Token> tokens;
     private int current = 0;
-    
+
     Parser(List<Token> tokens) {
         this.tokens = tokens;
     }
@@ -23,7 +25,7 @@ public class Parser {
 
     private Stmt statement() {
         if (match(PRINT)) return printStatement();
-        
+
         return expressionStatement();
     }
 
@@ -216,7 +218,7 @@ public class Parser {
 
     private ParseError error(Token token, String message) {
         Lox.error(token, message);
-        return new ParseError();
+        return new ParseError(message);
     }
 
     private void synchronize() {

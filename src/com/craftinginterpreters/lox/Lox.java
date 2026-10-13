@@ -47,15 +47,20 @@ public class Lox {
     }
 
     private static void run(String source) {
-        Scanner scanner = new Scanner(source);
-        List<Token> tokens = scanner.scanTokens();
-        Parser parser = new Parser(tokens);
-        List<Stmt> statements = parser.parse();
+        try {
+            Scanner scanner = new Scanner(source);
+            List<Token> tokens = scanner.scanTokens();
+            Parser parser = new Parser(tokens);
+            List<Stmt> statements = parser.parse();
 
-        // Stop if there was a syntax error
-        if (hadError) return;
+            // Stop if there was a syntax error
+            if (hadError) return;
 
-        interpreter.interpret(statements);
+            interpreter.interpret(statements);
+        } catch(Exception e) {
+            if (hadError) System.err.println("error: " + e.getMessage());
+            else System.err.println("unknown error: " + e.getMessage());
+        }
     }
 
     static void error (int line, String message) {
@@ -69,7 +74,7 @@ public class Lox {
             report(token.line, " at '" + token.lexeme + "'", message);
         }
     }
-    
+
     static void runtimeError(RuntimeError error) {
         System.err.println(error.getMessage() + "\n[line " + error.token.line + "]");
     }
@@ -78,7 +83,7 @@ public class Lox {
         System.err.println(
             "[line " + line + "] Error" + where + ": " + message
         );
-        
+
         hadRuntimeError = true;
     }
 }
