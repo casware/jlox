@@ -59,7 +59,6 @@ public class Lox {
             interpreter.interpret(statements);
         } catch(Exception e) {
             if (hadError) System.err.println("error: " + e.getMessage());
-            else System.err.println("unknown error: " + e.getMessage());
         }
     }
 
