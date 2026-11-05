@@ -6,6 +6,15 @@ import java.util.Map;
 class Environment {
     private final Map<String, Object> values = new HashMap<String,Object>();
 
+    void assign(Token name, Object val) {
+        if (values.containsKey(name.lexeme)) {
+            values.put(name.lexeme, val);
+            return;
+        }
+
+        throw new RuntimeError(name, "Undefined variable '" + name.lexeme + "'.");
+    }
+
     void define(String name, Object val) {
         values.put(name, val);
     }
