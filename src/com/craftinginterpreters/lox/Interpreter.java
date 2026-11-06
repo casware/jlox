@@ -4,20 +4,23 @@ import static com.craftinginterpreters.lox.TokenType.OR;
 
 import java.util.List;
 
-public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
+public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
     private Environment environment = new Environment();
 
-    void interpret(List<Stmt> statements) {
+    Object interpret(List<Stmt> statements) {
+        Object value = null;
         try {
             for (Stmt statement: statements) {
-                execute(statement);
+                value = execute(statement);
             }
         } catch (RuntimeError error) {
             Lox.runtimeError(error);
         }
+
+        return value;
     }
 
-    private String stringify(Object object) {
+    public String stringify(Object object) {
         if (object == null) return "nil";
 
         if (object instanceof Double) {
@@ -42,14 +45,12 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     }
 
     @Override
-    public Void visitExpressionStmt(Stmt.Expression stmt) {
-        Object value = evaluate(stmt.expression);
-        System.out.println(stringify(value));
-        return null;
+    public Object visitExpressionStmt(Stmt.Expression stmt) {
+        return evaluate(stmt.expression);
     }
 
     @Override
-    public Void visitIfStmt(Stmt.If stmt) {
+    public Object visitIfStmt(Stmt.If stmt) {
         Object condition = evaluate(stmt.condition);
         if (isTruthy(condition)) {
             execute(stmt.thenBranch);
@@ -60,7 +61,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     }
 
     @Override
-    public Void visitWhileStmt(Stmt.While stmt) {
+    public Object visitWhileStmt(Stmt.While stmt) {
         while (isTruthy(evaluate(stmt.condition))) {
             execute(stmt.body);
         }
@@ -68,14 +69,14 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     }
 
     @Override
-    public Void visitPrintStmt(Stmt.Print stmt) {
+    public Object visitPrintStmt(Stmt.Print stmt) {
         Object value = evaluate(stmt.expression);
         System.out.println(stringify(value));
         return null;
     }
 
     @Override
-    public Void visitVarStmt(Stmt.Var stmt) {
+    public Object visitVarStmt(Stmt.Var stmt) {
         Object value = null;
         if (stmt.initializer != null) {
             value = evaluate(stmt.initializer);
@@ -86,30 +87,31 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     }
 
     @Override
-    public Void visitBlockStmt(Stmt.Block stmt) {
+    public Object visitBlockStmt(Stmt.Block stmt) {
         executeBlock(stmt.statements, new Environment(environment));
         return null;
     }
 
-    void executeBlock(List<Stmt> statements, Environment env) {
+    Object executeBlock(List<Stmt> statements, Environment env) {
         Environment previous = this.environment;
+        Object value = null;
         try {
             this.environment = env;
-
             for (Stmt statement: statements) {
-                execute(statement);
+                value = execute(statement);
             }
         } finally {
             this.environment = previous;
         }
+        return value;
     }
 
     private Object evaluate(Expr expr) {
         return expr.accept(this);
     }
 
-    private void execute(Stmt stmt) {
-        stmt.accept(this);
+    private Object execute(Stmt stmt) {
+        return stmt.accept(this);
     }
 
     @Override

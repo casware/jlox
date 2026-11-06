@@ -67,7 +67,7 @@ public class Parser {
         Expr expr = expression();
         // Allow no trailing ';' in expressions to improve REPL useability
         if (peek().type == SEMICOLON) advance();
-        // consume(SEMICOLON, "Expect ';' statement terminator");
+        //consume(SEMICOLON, "Expect ';' statement terminator");
 
         return new Stmt.Expression(expr);
     }

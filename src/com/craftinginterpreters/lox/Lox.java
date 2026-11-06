@@ -41,12 +41,15 @@ public class Lox {
             System.out.print("> ");
             String line = reader.readLine();
             if(line == null) break;
-            run(line);
+            Object value = run(line);
+            // print final value
+            System.out.println(interpreter.stringify(value));
             hadError = false;
         }
     }
 
-    private static void run(String source) {
+    private static Object run(String source) {
+        Object value = null;
         try {
             Scanner scanner = new Scanner(source);
             List<Token> tokens = scanner.scanTokens();
@@ -54,12 +57,13 @@ public class Lox {
             List<Stmt> statements = parser.parse();
 
             // Stop if there was a syntax error
-            if (hadError) return;
-
-            interpreter.interpret(statements);
+            if (hadError) return null;
+            value = interpreter.interpret(statements);
         } catch(Exception e) {
             if (hadError) System.err.println("error: " + e.getMessage());
         }
+
+        return value;
     }
 
     static void error (int line, String message) {
