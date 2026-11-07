@@ -1,0 +1,2 @@
+make compile
+java -cp bin com.craftinginterpreters.lox.Lox $1
