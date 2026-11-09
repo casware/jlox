@@ -210,41 +210,6 @@ public class Parser {
         return expr;
     }
 
-    private Expr rightComma() {
-        Expr left = equality();
-        if (!match(COMMA)) {
-            return left;
-        }
-
-        Token operator = previous();
-        Expr expr = new Expr.Binary(left, operator, rightComma());
-        return expr;
-    }
-
-    private Expr rightCommaNoRecursion() {
-        Expr expr = equality();
-        while (match(COMMA)) {
-            Token operator = previous();
-            Expr right = equality();
-            expr = new Expr.Binary(expr, operator, right);
-        }
-
-        // Reverse the associativity
-        if(expr instanceof Expr.Binary) {
-            Expr.Binary binary = (Expr.Binary)expr;
-            Expr left = binary.left;
-            Expr right = binary.right;
-            while (left instanceof Expr.Binary) {
-                Expr.Binary leftBinary = (Expr.Binary)left;
-                right = new Expr.Binary(leftBinary.right, leftBinary.operator, right);
-                left = leftBinary.left;
-            }
-            expr = new Expr.Binary(left, binary.operator, right);
-        }
-
-        return expr;
-    }
-
     private Expr equality() {
         Expr expr = comparison();
 
