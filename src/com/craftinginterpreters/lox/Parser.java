@@ -9,6 +9,7 @@ public class Parser {
     private static class ParseError extends RuntimeException {
         public ParseError(String message) { super(message); }
     }
+    private final int maxFunctionArgs = 255;
     private final List<Token> tokens;
     private int current = 0;
 
@@ -51,11 +52,27 @@ public class Parser {
     // statement -> printStmt | exprStmt | block
     private Stmt statement() {
         if (match(PRINT)) return printStatement();
+        if (match(FUN)) return functionStatement();
         if (match(LEFT_BRACE)) return new Stmt.Block(block());
         if (match(FOR)) return forStatement();
         if (match(IF)) return ifStatement();
         if (match(WHILE)) return whileStatement();
         return expressionStatement();
+    }
+
+    private Stmt functionStatement() {
+        Token name = consume(IDENTIFIER, "Expect function name.");
+        consume(LEFT_PAREN, "Expect '(' after function name.");
+        List<Token> params = new ArrayList<>();
+        if (!check(RIGHT_PAREN)) {
+            do {
+                params.add(consume(IDENTIFIER, "Identifier expected in function parameter list."));
+            } while(match(COMMA));
+        }
+        consume(RIGHT_PAREN, "Expect ')' after arguments.");
+        consume(LEFT_BRACE, "Expect '{' after function parameter list.");
+
+        return new Stmt.Function(name, params, block());
     }
 
     private Stmt forStatement() {
@@ -275,7 +292,38 @@ public class Parser {
             return comma();
         }
 
-        return primary();
+        return call();
+    }
+
+    private Expr call() {
+        Expr expr = primary();
+
+        while (true) {
+            if (match(LEFT_PAREN)) {
+                expr = finishCall(expr);
+            } else {
+                break;
+            }
+        }
+
+        return expr;
+    }
+
+    private Expr finishCall(Expr callee) {
+        List<Expr> arguments = new ArrayList<>();
+        if (!check(RIGHT_PAREN)) {
+            do {
+                // limit function arguments to 255
+                if(arguments.size() >= maxFunctionArgs) {
+                    error(peek(), "Can't have more than " + maxFunctionArgs + " arguments");
+                }
+                // parse an or() production since comma operators are not allowed in function call
+                arguments.add(or());
+            } while (match(COMMA));
+        }
+
+        Token paren = consume(RIGHT_PAREN, "Expect ')' after arguments.");
+        return new Expr.Call(callee, paren, arguments);
     }
 
     private Expr primary() {
