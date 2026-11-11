@@ -26,16 +26,6 @@ $(all_javas):
 clean:
 	rm -rf $(OUTPUT_DIR)
 
-# Run
-.PHONY: run
-run:
-	$(JVM) $(JVMFLAGS) com.craftinginterpreters.lox.Lox
-
-# Run
-.PHONY: run_file
-run_file:
-	$(JVM) $(JVMFLAGS) com.craftinginterpreters.lox.Lox test_scanner.txt
-
 # Test scanner
 .PHONY: test_scanner
 test_scanner:
@@ -44,3 +34,7 @@ test_scanner:
 .PHONY: generate_ast
 generate_ast:
 	$(JVM) $(JVMFLAGS) src/com/craftinginterpreters/tool/GenerateAst.java .
+
+.PHONY: print_ast
+print_ast:
+	$(JVM) $(JVMFLAGS) com.craftinginterpreters.lox.AstPrinter $(SCANNER_TEST_FILE)
