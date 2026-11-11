@@ -1,6 +1,73 @@
 package com.craftinginterpreters.lox;
 
-class AstPrinter implements Expr.Visitor<String> {
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
+
+class AstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
+    String print(Stmt stmt) {
+        return stmt.accept(this);
+    }
+
+    String print(List<Stmt> statements) {
+        String ret = "";
+        for(Stmt s: statements){
+            ret += print(s) + "\n";
+        }
+        return ret;
+    }
+
+    @Override
+    public String visitBlockStmt(Stmt.Block stmt) {
+        String ret = "{";
+        for (Stmt s : stmt.statements) {
+            ret += print(s);
+        }
+        ret += "}";
+
+        return ret;
+    }
+
+    @Override
+    public String visitExpressionStmt(Stmt.Expression stmt) {
+        return print(stmt.expression);
+    }
+
+    @Override
+    public String visitIfStmt(Stmt.If stmt) {
+        String ret = "if (" + print(stmt.condition) + ") {";
+        ret += print(stmt.thenBranch) + "}";
+
+        if (stmt.elseBranch != null) {
+            ret += "\nelse {" + print(stmt.thenBranch) + "}";
+        }
+
+        return ret;
+    }
+
+    @Override
+    public String visitWhileStmt(Stmt.While stmt) {
+        String ret = "while (" + print(stmt.condition) + ") + { " +
+                print(stmt.body) + " }";
+        return ret;
+    }
+
+    @Override
+    public String visitPrintStmt(Stmt.Print stmt) {
+        return "print " + print(stmt.expression);
+    }
+
+    @Override
+    public String visitVarStmt(Stmt.Var stmt) {
+        String ret = stmt.name.lexeme + " = ";
+        if (stmt.initializer != null) {
+            ret += print(stmt.initializer);
+        }
+        return ret;
+    }
+
     String print(Expr expr) {
         return expr.accept(this);
     }
@@ -27,7 +94,8 @@ class AstPrinter implements Expr.Visitor<String> {
 
     @Override
     public String visitLiteralExpr(Expr.Literal expr) {
-        if(expr.value == null) return "nil";
+        if (expr.value == null)
+            return "nil";
         return expr.value.toString();
     }
 
@@ -41,11 +109,11 @@ class AstPrinter implements Expr.Visitor<String> {
         return var.name.lexeme;
     }
 
-    private String parenthesize(String name, Expr ...exprs) {
+    private String parenthesize(String name, Expr... exprs) {
         StringBuilder builder = new StringBuilder();
 
         builder.append("(").append(name);
-        for (Expr expr: exprs) {
+        for (Expr expr : exprs) {
             builder.append(" ");
             builder.append(expr.accept(this));
         }
@@ -54,12 +122,20 @@ class AstPrinter implements Expr.Visitor<String> {
         return builder.toString();
     }
 
-    public static void main(String[] args) {
-        Expr expression = new Expr.Binary(
-            new Expr.Unary(
-                new Token(TokenType.MINUS, "-", null, 1), new Expr.Literal(123)),
-                new Token(TokenType.STAR, "*", null, 1),
-                new Expr.Grouping( new Expr.Literal(45.67)));
-        System.out.println(new AstPrinter().print(expression));
+    public static void main(String[] args) throws IOException {
+        String path = args[0];
+        byte[] bytes = Files.readAllBytes(Paths.get(path));
+        String source = new String(bytes, Charset.defaultCharset());
+        try {
+            Scanner scanner = new Scanner(source);
+            List<Token> tokens = scanner.scanTokens();
+            Parser parser = new Parser(tokens);
+            List<Stmt> statements = parser.parse();
+            System.out.println(new AstPrinter().print(statements));
+
+        } catch(Exception e) {
+            System.err.println("error: " + e.getMessage());
+        }
+
     }
 }
