@@ -12,7 +12,6 @@ JFLAGS				:= 	-g \
 						-cp $(class_path)
 JVMFLAGS 			:= 	-cp $(class_path)
 
-.PHONY: compile
 compile: $(all_javas)
 	$(JAVAC) $(JFLAGS) @$<
 
