@@ -19,6 +19,22 @@ class AstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
         return ret;
     }
 
+    String stringify(List<Token> tokens) {
+        String ret = "";
+        for(Token t: tokens){
+            ret += t.lexeme;
+        }
+        return ret;
+    }
+
+    @Override
+    public String visitFunctionStmt(Stmt.Function stmt) {
+        String ret = "fun ";
+        ret += "(" + stmt.name.lexeme + ", " + stringify(stmt.params) + ", "
+                + print(stmt.body) + ")";
+        return ret;
+    }
+
     @Override
     public String visitBlockStmt(Stmt.Block stmt) {
         String ret = "{";
@@ -109,7 +125,13 @@ class AstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
         return var.name.lexeme;
     }
 
-    private String parenthesize(String name, Expr... exprs) {
+    @Override
+    public String visitCallExpr(Expr.Call expr) {
+        // TODO: update this to something more sensible
+        return expr.callee.toString();
+    }
+
+    private String parenthesize(String name, Expr ...exprs) {
         StringBuilder builder = new StringBuilder();
 
         builder.append("(").append(name);
