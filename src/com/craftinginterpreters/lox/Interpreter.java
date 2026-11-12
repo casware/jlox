@@ -93,6 +93,14 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
     }
 
     @Override
+    public Object visitReturnStmt(Stmt.Return stmt) {
+        Object value = null;
+        if (stmt.value != null) value = evaluate(stmt.value);
+
+        throw new Return(value);
+    }
+
+    @Override
     public Object visitVarStmt(Stmt.Var stmt) {
         Object value = null;
         if (stmt.initializer != null) {
@@ -111,30 +119,8 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
 
     @Override
     public Object visitFunctionStmt(Stmt.Function stmt) {
-        Token name = stmt.name;
-        int arity = stmt.params.size();
-
-        // create new callable and add to environment
-        LoxCallable fcn = new LoxCallable() {
-            @Override
-            public int arity() { return arity; }
-
-            @Override
-            public Object call(Interpreter interpreter, List<Object> argList) {
-                // pop a new environment on the block with param names/values
-                Environment fcnScope = new Environment(environment);
-                for (int i = 0; i < argList.size(); i++) {
-                    String paramName = stmt.params.get(i).lexeme;
-                    Object paramValue = argList.get(i);
-                    fcnScope.define(paramName, paramValue);
-                }
-
-                // execute the block
-                return interpreter.executeBlock(stmt.body, fcnScope);
-            }
-        };
-
-        environment.define(name.lexeme, fcn);
+        LoxFunction function = new LoxFunction(stmt);
+        environment.define(stmt.name.lexeme, function);
         return null;
     }
 

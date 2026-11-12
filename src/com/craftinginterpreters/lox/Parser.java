@@ -55,6 +55,7 @@ public class Parser {
         if (match(FUN)) return functionStatement();
         if (match(LEFT_BRACE)) return new Stmt.Block(block());
         if (match(FOR)) return forStatement();
+        if (match(RETURN)) return returnStatement();
         if (match(IF)) return ifStatement();
         if (match(WHILE)) return whileStatement();
         return expressionStatement();
@@ -125,6 +126,15 @@ public class Parser {
         Expr expression = expression();
         consume(SEMICOLON, "Expect ';' statement terminator");
         return new Stmt.Print(expression);
+    }
+
+    private Stmt returnStatement() {
+        Token keyword = previous();
+        Expr value = null;
+        if (!check(SEMICOLON)) value = expression();
+
+        consume(SEMICOLON, "Expected ';' after return value.");
+        return new Stmt.Return(keyword, value);
     }
 
     private Stmt expressionStatement() {

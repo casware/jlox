@@ -25,6 +25,12 @@ $(all_javas):
 clean:
 	rm -rf $(OUTPUT_DIR)
 
+.PHONY: run
+run:
+	$(JVM) $(JVMFLAGS) com.craftinginterpreters.lox.Lox
+
+
+
 # Test scanner
 .PHONY: test_scanner
 test_scanner:

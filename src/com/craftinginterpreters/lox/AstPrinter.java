@@ -28,10 +28,15 @@ class AstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
     }
 
     @Override
+    public String visitReturnStmt(Stmt.Return stmt) {
+        return "ret";
+    }
+
+    @Override
     public String visitFunctionStmt(Stmt.Function stmt) {
-        String ret = "fun ";
+        String ret = "<fun ";
         ret += "(" + stmt.name.lexeme + ", " + stringify(stmt.params) + ", "
-                + print(stmt.body) + ")";
+                + print(stmt.body) + ")>";
         return ret;
     }
 

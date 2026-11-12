@@ -1,6 +1,7 @@
 statement       ->  exprStmt
                     | ifStmt
                     | printStmt
+                    | returnStmt
                     | whileStmt
                     | forStmt
                     | block;
@@ -9,7 +10,9 @@ forStmt         -> "for" "(" (varDecl | exprStmt | ";")
                     expression? ";"
                     expression? ")" statement ;
 
-whleStmt        -> "while" "(" expression ")" statement ;
+returnStmt      -> "return" expression? ";" ;
+
+whileStmt        -> "while" "(" expression ")" statement ;
 
 block           ->  "{" declaration* "}"
 
