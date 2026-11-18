@@ -22,3 +22,20 @@ program -> expr
 plus the rules for expression parsing.
 Now, we want to add some rules to the top of the parse tree, but continue to fall through to the lower levels.
 We also need to get the types to match up properly.
+
+### Closures and Dynamic Scope Leak
+How to fix closures so they aren't shadowed by block they are executed in instead of using the value of the variable they were lexicall
+defined in? E.g. how to get
+```
+var a = "outer";
+{ fun showA() { print a; } showA(); var a = "block"; showA(); }
+```
+
+to print "global" twice?
+Currently, the a -> "global" in the global scope.
+
+Try deep copying the environment into closure instead; this seems to work, but figure out why.
+Also an issue with the copying: it is adding an additional empty environment on top of the stack; fix this.
+This is not a good solution in general; will lead to lots of duplicate environments, one for every function definition.
+Many functions could share the same copy if they are defined in the same scope.
+How could that be done?

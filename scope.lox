@@ -1,0 +1,10 @@
+var a = "outer";
+{
+    fun showA() {
+        print a;
+    }
+
+    showA();
+    var a = "block";
+    showA();
+}
