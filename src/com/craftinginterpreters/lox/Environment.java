@@ -8,11 +8,28 @@ class Environment {
     private final Map<String, Object> values = new HashMap<String,Object>();
 
     Environment() {
-        enclosing = null;
+        this.enclosing = null;
     }
 
     Environment(Environment enclosing) {
         this.enclosing = enclosing;
+    }
+
+    Environment(Map<String,Object> values, Environment enclosing) {
+        this.values.putAll(values);
+        this.enclosing = enclosing;
+    }
+
+    // deep copy values
+    private Environment copy(Environment another) {
+        Map<String, Object> values = new HashMap<String, Object>();
+        values.putAll(another.values);
+        Environment encl = another.enclosing != null ? copy(another.enclosing) : null;
+        return new Environment(values, encl);
+    }
+
+    public Environment copy() {
+        return copy(this);
     }
 
     void assign(Token name, Object val) {
@@ -43,5 +60,20 @@ class Environment {
         if (enclosing != null) return enclosing.get(name);
 
         throw new RuntimeError(name, "Undefined variable '" + name.lexeme + "'.");
+    }
+
+    public String toString(int depth) {
+        String offset = "";
+        for (int j = 0; j < depth; j++) {
+            offset += "\t";
+        }
+        String ret = offset + "<env " + depth + ">\n";
+        for(String key: values.keySet()) {
+            ret += offset + " " + key + " -> "+ values.get(key).toString() + "\n";
+        }
+        ret += offset + "<env " + depth + ">";
+        if (enclosing != null) ret += "\n" + enclosing.toString(depth+1);
+
+        return ret;
     }
 }
